@@ -229,7 +229,6 @@ function guardarBorrador(){
     docId: docId.value,
     nombre: nombreEl.value,
     usuario: usuarioEl.value,
-    password: passwordEl.value,
     rol: rolEl.value,
     rutaId: rutaIdEl.value,
     activo: activoEl.value
@@ -244,7 +243,6 @@ function restaurarBorrador(){
   docId.value = data.docId || '';
   nombreEl.value = data.nombre || '';
   usuarioEl.value = data.usuario || '';
-  passwordEl.value = data.password || '';
   rolEl.value = data.rol || 'admin';
   rutaIdEl.value = data.rutaId || '';
   activoEl.value = data.activo || 'true';
