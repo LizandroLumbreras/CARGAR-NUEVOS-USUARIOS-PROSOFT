@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login PROVSOFT</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(to right,#00416A,#0c6cbd);
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.card{
+  background:white;
+  padding:30px;
+  border-radius:14px;
+  width:320px;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
+}
+h2{text-align:center;color:#00416A}
+input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+button{
+  width:100%;
+  margin-top:15px;
+  padding:12px;
+  background:#00416A;
+  color:white;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+}
+.err{color:red;text-align:center;margin-top:10px;}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Acceso PROVSOFT</h2>
+  <input id="usuario" placeholder="Usuario">
+  <input id="password" type="password" placeholder="Contraseña">
+  <button onclick="login()">Entrar</button>
+  <div id="msg" class="err"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCK5nb6u2CGRJ8AB1aPlRn54b97bdeAFeM",
+  authDomain: "inventariopv-643f1.firebaseapp.com",
+  projectId: "inventariopv-643f1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.login = async () => {
+  const usuario = document.getElementById('usuario').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const msg = document.getElementById('msg');
+  msg.textContent = '';
+
+  try{
+    const q = query(
+      collection(db,'usuarios_ruta'),
+      where('usuario','==',usuario),
+      where('password','==',password),
+      where('activo','==',true)
+    );
+
+    const snap = await getDocs(q);
+
+    if(snap.empty){
+      msg.textContent="Credenciales inválidas";
+      return;
+    }
+
+    const user = snap.docs[0].data();
+
+    if(user.rol !== 'admin'){
+      msg.textContent="Acceso solo para administradores";
+      return;
+    }
+
+    // Guardar sesión
+    localStorage.setItem('usuarioAdmin', JSON.stringify({
+      usuario:user.usuario,
+      rol:user.rol
+    }));
+
+    window.location.href = "index.html"; // tu app de usuarios
+  }catch(e){
+    msg.textContent=e.message;
+  }
+};
+</script>
+
+</body>
+</html>
