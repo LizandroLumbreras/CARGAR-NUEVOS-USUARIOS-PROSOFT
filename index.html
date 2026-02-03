@@ -124,10 +124,9 @@ function logout(){
 }
 </script>
 
-  <button onclick="logout()" style="background:#b00020;margin-bottom:10px">
-  Cerrar sesión
-</button>
-  
+<button onclick="logout()" style="background:#b00020">Cerrar sesión</button>
+
+
 <div class="container">
 
 <!-- FORMULARIO -->
@@ -219,61 +218,6 @@ const rutaIdEl = document.getElementById('rutaId');
 const activoEl = document.getElementById('activo');
 const docId = document.getElementById('docId');
 
-  /* ================= INACTIVIDAD + BORRADOR ================= */
-
-const INACTIVIDAD_MS = 3 * 60 * 1000; // 3 minutos
-let temporizador;
-
-function guardarBorrador(){
-  const borrador = {
-    docId: docId.value,
-    nombre: nombreEl.value,
-    usuario: usuarioEl.value,
-    rol: rolEl.value,
-    rutaId: rutaIdEl.value,
-    activo: activoEl.value
-  };
-  localStorage.setItem('borradorUsuario', JSON.stringify(borrador));
-}
-
-function restaurarBorrador(){
-  const data = JSON.parse(localStorage.getItem('borradorUsuario'));
-  if(!data) return;
-
-  docId.value = data.docId || '';
-  nombreEl.value = data.nombre || '';
-  usuarioEl.value = data.usuario || '';
-  rolEl.value = data.rol || 'admin';
-  rutaIdEl.value = data.rutaId || '';
-  activoEl.value = data.activo || 'true';
-
-  if(data.docId){
-    titulo.textContent = "Editar Usuario (recuperado)";
-  }
-}
-
-function logoutInactividad(){
-  guardarBorrador();
-  localStorage.removeItem('usuarioAdmin');
-  window.location.href = "login.html";
-}
-
-function resetInactividad(){
-  clearTimeout(temporizador);
-  temporizador = setTimeout(logoutInactividad, INACTIVIDAD_MS);
-}
-
-['mousemove','keydown','click','scroll','touchstart'].forEach(ev=>{
-  document.addEventListener(ev, resetInactividad);
-});
-
-[nombreEl,usuarioEl,passwordEl,rolEl,rutaIdEl,activoEl].forEach(el=>{
-  el.addEventListener('input', guardarBorrador);
-});
-
-resetInactividad();
-restaurarBorrador();
-
 async function cargarUsuarios(){
   lista.innerHTML='';
   const snap = await getDocs(colRef);
@@ -335,15 +279,16 @@ if(passwordEl.value.trim()){
       await addDoc(colRef,data);
       msg.textContent="Usuario creado";
     }
-msg.className="ok";
-localStorage.removeItem('borradorUsuario');
-resetForm();
-cargarUsuarios();
+    msg.className="ok";
+    resetForm();
+    cargarUsuarios();
   }catch(err){
     msg.textContent=err.message;
     msg.className="err";
   }
 });
+
+cargarUsuarios();
 </script>
 </body>
 </html>
