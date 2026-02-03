@@ -1,62 +1,143 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Alta de Usuarios – PROVSOFT</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to right,#00416A,#E4E5E6);
-      margin: 0; padding: 0;
-      display: flex; justify-content: center; align-items: center;
-      height: 100vh; color: #111;
-    }
-    form {
-      background: rgba(255,255,255,0.9);
-      padding: 25px; border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,.18);
-      width: 320px;
-    }
-    h2 { text-align:center; color:#00416A; margin-bottom:20px; }
-    label { font-weight:600; display:block; margin-top:10px; }
-    input, select {
-      width:100%; padding:8px;
-      border:1px solid #ccc; border-radius:8px; margin-top:4px;
-    }
-    button {
-      width:100%; margin-top:16px; padding:10px;
-      background:#00416A; color:white;
-      border:none; border-radius:8px; cursor:pointer;
-      font-weight:600;
-    }
-    .ok{color:green;text-align:center;margin-top:10px;}
-    .err{color:red;text-align:center;margin-top:10px;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usuarios PROVSOFT</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --azul:#00416A;
+  --azul2:#0c6cbd;
+  --gris:#f4f6f9;
+  --card:#ffffff;
+  --radius:14px;
+  --shadow:0 8px 24px rgba(0,0,0,.18);
+}
+
+*{box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{
+  margin:0;
+  background:linear-gradient(to right,var(--azul),#E4E5E6);
+  min-height:100vh;
+  padding:20px;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:350px 1fr;
+  gap:20px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:20px;
+}
+
+h2{
+  color:var(--azul);
+  margin-bottom:15px;
+  text-align:center;
+}
+
+label{
+  font-weight:600;
+  margin-top:10px;
+  display:block;
+}
+
+input,select{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  margin-top:4px;
+}
+
+button{
+  width:100%;
+  margin-top:15px;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(to right,var(--azul),var(--azul2));
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+button.secondary{
+  background:#ccc;
+  color:#222;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:8px;
+  border-bottom:1px solid #ddd;
+  font-size:13px;
+  text-align:center;
+}
+
+th{
+  background:var(--azul);
+  color:white;
+}
+
+.edit{
+  background:#0c6cbd;
+  color:white;
+  padding:6px 10px;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+}
+
+.ok{color:green;text-align:center;margin-top:10px;}
+.err{color:red;text-align:center;margin-top:10px;}
+</style>
 </head>
+
 <body>
 
+<div class="container">
+
+<!-- FORMULARIO -->
+<div class="card">
+  <h2 id="tituloForm">Crear Usuario</h2>
+
   <form id="formUsuario">
-    <h2>Crear Usuario</h2>
+    <input type="hidden" id="docId">
+
     <label>Nombre completo</label>
-    <input type="text" id="nombre" required>
+    <input id="nombre" required>
 
     <label>Usuario</label>
-    <input type="text" id="usuario" required>
+    <input id="usuario" required>
 
     <label>Contraseña</label>
-    <input type="text" id="password" required>
+    <input id="password" required>
 
     <label>Rol</label>
-    <select id="rol" required>
+    <select id="rol">
       <option value="admin">Admin</option>
       <option value="vendedor">Vendedor</option>
       <option value="encargado bodega">Encargado Bodega</option>
     </select>
 
     <label>Ruta ID</label>
-    <input type="text" id="rutaId" placeholder="Ejemplo: AdministradorPOS" required>
+    <input id="rutaId" required>
 
     <label>Activo</label>
     <select id="activo">
@@ -64,47 +145,115 @@
       <option value="false">Inactivo</option>
     </select>
 
-    <button type="submit">Guardar Usuario</button>
+    <button type="submit">Guardar</button>
+    <button type="button" class="secondary" onclick="resetForm()">Cancelar</button>
+
     <div id="msg"></div>
   </form>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<!-- LISTADO -->
+<div class="card">
+  <h2>Usuarios Registrados</h2>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCK5nb6u2CGRJ8AB1aPlRn54b97bdeAFeM",
-      authDomain: "inventariopv-643f1.firebaseapp.com",
-      projectId: "inventariopv-643f1",
-      storageBucket: "inventariopv-643f1.appspot.com",
-      messagingSenderId: "96242533231",
-      appId: "1:96242533231:web:aae75a18fbaf9840529e9a"
-    };
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Usuario</th>
+        <th>Rol</th>
+        <th>Ruta</th>
+        <th>Activo</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="lista"></tbody>
+  </table>
+</div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+</div>
 
-    document.getElementById('formUsuario').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const msg = document.getElementById('msg');
-      msg.textContent = '';
-      try {
-        await addDoc(collection(db, 'usuarios_ruta'), {
-          nombre: document.getElementById('nombre').value.trim(),
-          usuario: document.getElementById('usuario').value.trim(),
-          password: document.getElementById('password').value.trim(),
-          rol: document.getElementById('rol').value,
-          rutaId: document.getElementById('rutaId').value.trim(),
-          activo: document.getElementById('activo').value === "true"
-        });
-        msg.textContent = "Usuario creado correctamente.";
-        msg.className = "ok";
-        e.target.reset();
-      } catch (error) {
-        msg.textContent = "Error: " + error.message;
-        msg.className = "err";
-      }
-    });
-  </script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCK5nb6u2CGRJ8AB1aPlRn54b97bdeAFeM",
+  authDomain: "inventariopv-643f1.firebaseapp.com",
+  projectId: "inventariopv-643f1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const colRef = collection(db,'usuarios_ruta');
+
+const lista = document.getElementById('lista');
+const form = document.getElementById('formUsuario');
+const msg = document.getElementById('msg');
+const titulo = document.getElementById('tituloForm');
+
+async function cargarUsuarios(){
+  lista.innerHTML='';
+  const snap = await getDocs(colRef);
+  snap.forEach(d=>{
+    const u=d.data();
+    lista.innerHTML+=`
+      <tr>
+        <td>${u.nombre}</td>
+        <td>${u.usuario}</td>
+        <td>${u.rol}</td>
+        <td>${u.rutaId}</td>
+        <td>${u.activo?'✔':'✖'}</td>
+        <td><button class="edit" onclick="editar('${d.id}','${u.nombre}','${u.usuario}','${u.password}','${u.rol}','${u.rutaId}','${u.activo}')">Editar</button></td>
+      </tr>`;
+  });
+}
+window.editar=(id,nombre,usuario,password,rol,rutaId,activo)=>{
+  document.getElementById('docId').value=id;
+  nombreEl.value=nombre;
+  usuarioEl.value=usuario;
+  passwordEl.value=password;
+  rolEl.value=rol;
+  rutaIdEl.value=rutaId;
+  activoEl.value=activo;
+  titulo.textContent="Editar Usuario";
+};
+
+window.resetForm=()=>{
+  form.reset();
+  document.getElementById('docId').value='';
+  titulo.textContent="Crear Usuario";
+};
+
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  msg.textContent='';
+  const data={
+    nombre:nombreEl.value.trim(),
+    usuario:usuarioEl.value.trim(),
+    password:passwordEl.value.trim(),
+    rol:rolEl.value,
+    rutaId:rutaIdEl.value.trim(),
+    activo:activoEl.value==="true"
+  };
+  try{
+    if(docId.value){
+      await updateDoc(doc(db,'usuarios_ruta',docId.value),data);
+      msg.textContent="Usuario actualizado";
+    }else{
+      await addDoc(colRef,data);
+      msg.textContent="Usuario creado";
+    }
+    msg.className="ok";
+    resetForm();
+    cargarUsuarios();
+  }catch(err){
+    msg.textContent=err.message;
+    msg.className="err";
+  }
+});
+
+cargarUsuarios();
+</script>
 </body>
 </html>
