@@ -188,6 +188,20 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const colRef = collection(db,'usuarios_ruta');
 
+const lista = document.getElementById('lista');
+const form = document.getElementById('formUsuario');
+const msg = document.getElementById('msg');
+const titulo = document.getElementById('tituloForm');
+
+const nombreEl = document.getElementById('nombre');
+const usuarioEl = document.getElementById('usuario');
+const passwordEl = document.getElementById('password');
+const rolEl = document.getElementById('rol');
+const rutaIdEl = document.getElementById('rutaId');
+const activoEl = document.getElementById('activo');
+const docId = document.getElementById('docId');
+
+
 const nombreEl = document.getElementById('nombre');
 const usuarioEl = document.getElementById('usuario');
 const passwordEl = document.getElementById('password');
