@@ -110,6 +110,22 @@ th{
 </head>
 
 <body>
+<script>
+const sesion = JSON.parse(localStorage.getItem('usuarioAdmin'));
+if(!sesion || sesion.rol !== 'admin'){
+  window.location.replace("login.html");
+}
+</script>
+ 
+<script>
+function logout(){
+  localStorage.removeItem('usuarioAdmin');
+  window.location.href="login.html";
+}
+</script>
+
+<button onclick="logout()" style="background:#b00020">Cerrar sesión</button>
+
 
 <div class="container">
 
@@ -127,7 +143,8 @@ th{
     <input id="usuario" required>
 
     <label>Contraseña</label>
-    <input id="password" required>
+   <input id="password" type="password">
+
 
 <label>Rol</label>
 <select id="rol" required>
@@ -218,15 +235,20 @@ async function cargarUsuarios(){
   });
 }
 window.editar=(id,nombre,usuario,password,rol,rutaId,activo)=>{
-  document.getElementById('docId').value=id;
-  nombreEl.value=nombre;
-  usuarioEl.value=usuario;
-  passwordEl.value=password;
-  rolEl.value=rol;
-  rutaIdEl.value=rutaId;
-  activoEl.value=activo;
-  titulo.textContent="Editar Usuario";
+  docId.value = id;
+  nombreEl.value = nombre;
+  usuarioEl.value = usuario;
+
+  passwordEl.value = '';
+  passwordEl.placeholder = '•••••• (sin cambios)';
+  passwordEl.removeAttribute('required');
+
+  rolEl.value = rol;
+  rutaIdEl.value = rutaId;
+  activoEl.value = activo;
+  titulo.textContent = "Editar Usuario";
 };
+
 
 window.resetForm=()=>{
   form.reset();
@@ -237,14 +259,18 @@ window.resetForm=()=>{
 form.addEventListener('submit',async e=>{
   e.preventDefault();
   msg.textContent='';
-  const data={
-    nombre:nombreEl.value.trim(),
-    usuario:usuarioEl.value.trim(),
-    password:passwordEl.value.trim(),
-    rol:rolEl.value,
-    rutaId:rutaIdEl.value.trim(),
-    activo:activoEl.value==="true"
-  };
+const data = {
+  nombre: nombreEl.value.trim(),
+  usuario: usuarioEl.value.trim(),
+  rol: rolEl.value,
+  rutaId: rutaIdEl.value.trim(),
+  activo: activoEl.value === "true"
+};
+
+if(passwordEl.value.trim()){
+  data.password = passwordEl.value.trim();
+}
+
   try{
     if(docId.value){
       await updateDoc(doc(db,'usuarios_ruta',docId.value),data);
