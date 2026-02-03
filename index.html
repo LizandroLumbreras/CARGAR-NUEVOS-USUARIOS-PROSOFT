@@ -201,16 +201,6 @@ const rutaIdEl = document.getElementById('rutaId');
 const activoEl = document.getElementById('activo');
 const docId = document.getElementById('docId');
 
-
-const nombreEl = document.getElementById('nombre');
-const usuarioEl = document.getElementById('usuario');
-const passwordEl = document.getElementById('password');
-const rolEl = document.getElementById('rol');
-const rutaIdEl = document.getElementById('rutaId');
-const activoEl = document.getElementById('activo');
-const docId = document.getElementById('docId');
-
-
 async function cargarUsuarios(){
   lista.innerHTML='';
   const snap = await getDocs(colRef);
